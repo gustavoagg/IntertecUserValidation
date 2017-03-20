@@ -3,6 +3,7 @@ package com.intertecintl.service;
 import java.util.List;
 
 import com.intertecintl.model.User;
+import com.intertecintl.model.Result;
 
 public interface UserService {
 
@@ -19,5 +20,7 @@ public interface UserService {
 	List<User> findAllUsers();
 
 	public boolean isUserExist(User user);
+	
+	public Result<Boolean,List<String>> checkUsername(User user);
 
 }

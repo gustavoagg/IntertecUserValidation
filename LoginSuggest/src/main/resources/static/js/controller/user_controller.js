@@ -4,6 +4,7 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
           var self = this;
           self.user={id:null,username:''};
           self.users=[];
+          self.suggested=[];
               
           self.fetchAllUsers = function(){
               UserService.fetchAllUsers()

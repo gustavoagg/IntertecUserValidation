@@ -42,6 +42,7 @@
                                       <span ng-show="myForm.uname.$error.required">This is a required field</span>
                                       <span ng-show="myForm.uname.$error.minlength">Minimum length required is 3</span>
                                       <span ng-show="myForm.uname.$invalid">This field is invalid </span>
+                                      <span ng-show="ctrl.suggested">This name is taken please choose another </span>
                                   </div>
                               </div>
                           </div>
@@ -66,9 +67,8 @@
                           <tr>
                               <th>ID.</th>
                               <th>Name</th>
-                              <th>Address</th>
-                              <th>Email</th>
-                              <th width="20%"></th>
+                              <th>Action</th>
+                              <th width="30%"></th>
                           </tr>
                       </thead>
                       <tbody>
@@ -76,7 +76,7 @@
                               <td><span ng-bind="u.id"></span></td>
                               <td><span ng-bind="u.username"></span></td>
                               <td>
-                              <button type="button" ng-click="ctrl.edit(u.id)" class="btn btn-success custom-width">Edit</button>  <button type="button" ng-click="ctrl.remove(u.id)" class="btn btn-danger custom-width">Remove</button>
+                              <button type="button" ng-click="ctrl.remove(u.id)" class="btn btn-danger custom-width">Remove</button>
                               </td>
                           </tr>
                       </tbody>

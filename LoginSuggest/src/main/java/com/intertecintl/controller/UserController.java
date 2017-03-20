@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.intertecintl.model.Result;
 import com.intertecintl.model.User;
 import com.intertecintl.service.UserService;
 
@@ -64,17 +65,19 @@ public class UserController {
 	 * @return ResponseEntity with the status of the transaction
 	 */
 	@RequestMapping(value = "/user/", method = RequestMethod.POST)
-	public ResponseEntity<Void> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
-
-		if (userService.isUserExist(user)) {
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+	public ResponseEntity<List<String>> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
+		Result<Boolean,List<String>> result = userService.checkUsername(user);
+		if (result.getKey()) {
+			List<String> suggestedWords = result.getValues();			
+			return new ResponseEntity<List<String>>(suggestedWords,HttpStatus.CONFLICT);
 		}
 
 		userService.saveUser(user);
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
-		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());		
+		
+		return new ResponseEntity<List<String>>(headers, HttpStatus.CREATED);
 	}
 	
 	
