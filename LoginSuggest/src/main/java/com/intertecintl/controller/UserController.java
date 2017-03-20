@@ -17,6 +17,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.intertecintl.model.User;
 import com.intertecintl.service.UserService;
 
+/**
+ * @author Gustavo
+ *
+ */
 @RestController
 public class UserController {
 	@Autowired
@@ -72,5 +76,25 @@ public class UserController {
 		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
+	
+	
+	/**
+	 * Delete the user specified by the id
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) {
+        System.out.println("Fetching & Deleting User with id " + id);
+ 
+        User user = userService.findById(id);
+        if (user == null) {
+            System.out.println("Unable to delete. User with id " + id + " not found");
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+ 
+        userService.deleteUserById(id);
+        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+    }
 
 }
