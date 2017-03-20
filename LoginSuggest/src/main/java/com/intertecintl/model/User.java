@@ -17,13 +17,7 @@ public class User {
 	long id;
 	
 	String username;
-
-	public User(long id, String username) {
-		super();
-		this.id = id;
-		this.username = username;
-	}
-
+	
 	public long getId() {
 		return id;
 	}
