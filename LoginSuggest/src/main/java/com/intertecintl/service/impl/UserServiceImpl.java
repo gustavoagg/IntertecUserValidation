@@ -62,15 +62,22 @@ public class UserServiceImpl implements UserService {
 		return findByName(user.getUsername()) != null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.intertecintl.service.UserService#checkUsername(com.intertecintl.model.User)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.intertecintl.service.UserService#checkUsername(com.intertecintl.model
+	 * .User)
 	 */
 	@Override
 	public Result<Boolean, List<String>> checkUsername(User user) {
-		Result<Boolean, List<String>> result = new Result<Boolean, List<String>>(isUserExist(user));
-		Iterable<RestrictedWord> dictionary = wordRepository.findAll();
-		if (!result.getKey()) {
+		Result<Boolean, List<String>> result;
+		if (isUserExist(user)) {
+			result = new Result<Boolean, List<String>>(false);
+			Iterable<RestrictedWord> dictionary = wordRepository.findAll();
 			result.setValues(generateSuggestedNames(user, dictionary));
+		} else {
+			result = new Result<Boolean, List<String>>(true);
 		}
 		return result;
 	}
@@ -78,25 +85,35 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @param user
 	 *            user with the given name
-	 * @param regenerate
-	 *            true to specify if its necessary to change the complete name,
-	 *            false - to just add a random 3 char or number at the end.
-	 * @return Generates suggested names based on the name of the given user,
-	 * 
+	 * @param dictionary
+	 *            dictionary of RestrictedWords
+	 * @return Generates suggested names based on the name of the given user
 	 */
 	private List<String> generateSuggestedNames(User user, Iterable<RestrictedWord> dictionary) {
+		// if the given user name contains a restricted word, it gets completely
+		// regenerated using the letters that it contained
 		boolean regenerate = hasRestrictedWord(user, dictionary);
-		String suggested = user.getUsername();
-		int badSuggestions = 0, counter = 0;
+		String suggested = "";
+		Integer badSuggestions = 0;
+		Integer counter = 0;
 
 		Collection<String> orderList = new TreeSet<String>(Collator.getInstance());
 
-		while (badSuggestions >= 3 || counter >= 14) {
+		while ((counter != 14)||(badSuggestions==3)) {
 			if (regenerate) {
-				suggested = UserUtil.randomString(user.getUsername(), user.getUsername().length());
+				// Added the counter to the sourceString to obtain alternatives
+				// in the case of a username with the same letter ejm: "iiiiii"
+				// the suggested alternatives will change all the username but
+				// using the same letters and the counter number
+				suggested = UserUtil.randomString(user.getUsername() + counter, user.getUsername().length());
 			} else {
-				suggested = user.getUsername() + "." + UserUtil.randomString(user.getUsername(), 3);
+				// Suggested alternative will have a dot at the end of the user
+				// name with 3 random chars from the user name or counter number
+				suggested = user.getUsername() + "." + UserUtil.randomString(user.getUsername() + counter, 3);
 			}
+
+			// The suggestion is check to see if it didn't regenerate a
+			// restricted name or if it is used
 			if (isValidSuggestion(suggested, dictionary)) {
 				orderList.add(suggested);
 				counter++;
@@ -113,9 +130,10 @@ public class UserServiceImpl implements UserService {
 	 * @return Checks if suggested name already exists or has a restricted word
 	 */
 	private boolean isValidSuggestion(String suggested, Iterable<RestrictedWord> dictionary) {
-		User user = new User(suggested);
-		if (!isUserExist(user)) {
-			if (!hasRestrictedWord(user, dictionary)) {
+		User user = new User();
+		user.setUsername(suggested);
+		if (!hasRestrictedWord(user, dictionary)) {
+			if (!isUserExist(user)) {
 				return true;
 			}
 		}

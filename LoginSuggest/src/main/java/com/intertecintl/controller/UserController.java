@@ -67,7 +67,7 @@ public class UserController {
 	@RequestMapping(value = "/user/", method = RequestMethod.POST)
 	public ResponseEntity<List<String>> createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
 		Result<Boolean,List<String>> result = userService.checkUsername(user);
-		if (result.getKey()) {
+		if (!result.getKey()) {
 			List<String> suggestedWords = result.getValues();			
 			return new ResponseEntity<List<String>>(suggestedWords,HttpStatus.CONFLICT);
 		}
