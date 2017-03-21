@@ -4,7 +4,7 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
           var self = this;
           self.user={id:null,username:''};
           self.users=[];
-          self.suggested=[];
+          self.suggested=null;
               
           self.fetchAllUsers = function(){
               UserService.fetchAllUsers()
@@ -13,7 +13,7 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
       						        self.users = d;
       					       },
             					function(errResponse){
-            						console.error('Error while fetching Currencies');
+            						console.error('Error while fetching Users');
             					}
       			       );
           };
@@ -21,7 +21,11 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
           self.createUser = function(user){
               UserService.createUser(user)
 		              .then(
-                      self.fetchAllUsers, 
+		            		  function(d) {
+    						        self.suggested = d;
+    						        self.fetchAllUsers();
+    					       }
+                      , 
 				              function(errResponse){
 					               console.error('Error while creating User.');
 				              }	
