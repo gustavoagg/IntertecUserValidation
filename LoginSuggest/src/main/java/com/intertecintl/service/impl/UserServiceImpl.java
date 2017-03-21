@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.intertecintl.model.User;
+import com.intertecintl.repository.RestrictedWordRepository;
 import com.intertecintl.repository.UserRepository;
 import com.intertecintl.service.UserService;
 import com.intertecintl.Util.UserUtil;
+import com.intertecintl.model.RestrictedWord;
 import com.intertecintl.model.Result;
 
 /**
@@ -28,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private RestrictedWordRepository wordRepository;
 
 	public List<User> findAllUsers() {
 		return (List<User>) userRepository.findAll();
@@ -57,23 +62,17 @@ public class UserServiceImpl implements UserService {
 		return findByName(user.getUsername()) != null;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.intertecintl.service.UserService#checkUsername(com.intertecintl.model.User)
+	 */
 	@Override
 	public Result<Boolean, List<String>> checkUsername(User user) {
 		Result<Boolean, List<String>> result = new Result<Boolean, List<String>>(isUserExist(user));
-
+		Iterable<RestrictedWord> dictionary = wordRepository.findAll();
 		if (!result.getKey()) {
-			if (hasRestrictedWord(user)) {
-				result.setValues(generateSuggestedNames(user, true));
-			} else {
-				result.setValues(generateSuggestedNames(user, false));
-			}
+			result.setValues(generateSuggestedNames(user, dictionary));
 		}
 		return result;
-	}
-
-	private boolean hasRestrictedWord(User user) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	/**
@@ -85,7 +84,8 @@ public class UserServiceImpl implements UserService {
 	 * @return Generates suggested names based on the name of the given user,
 	 * 
 	 */
-	private List<String> generateSuggestedNames(User user, boolean regenerate) {
+	private List<String> generateSuggestedNames(User user, Iterable<RestrictedWord> dictionary) {
+		boolean regenerate = hasRestrictedWord(user, dictionary);
 		String suggested = user.getUsername();
 		int badSuggestions = 0, counter = 0;
 
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 			} else {
 				suggested = user.getUsername() + "." + UserUtil.randomString(user.getUsername(), 3);
 			}
-			if (isValidSuggestion(suggested)) {
+			if (isValidSuggestion(suggested, dictionary)) {
 				orderList.add(suggested);
 				counter++;
 			} else {
@@ -109,12 +109,29 @@ public class UserServiceImpl implements UserService {
 
 	/**
 	 * @param suggested
+	 * @param dictionary
 	 * @return Checks if suggested name already exists or has a restricted word
 	 */
-	private boolean isValidSuggestion(String suggested) {
+	private boolean isValidSuggestion(String suggested, Iterable<RestrictedWord> dictionary) {
 		User user = new User(suggested);
 		if (!isUserExist(user)) {
-			if (!hasRestrictedWord(user)) {
+			if (!hasRestrictedWord(user, dictionary)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param user
+	 *            with a name
+	 * @param dictionary
+	 * @return true if username contains any of the words in the dictionary
+	 */
+	private boolean hasRestrictedWord(User user, Iterable<RestrictedWord> dictionary) {
+		String username = user.getUsername().toLowerCase();
+		for (RestrictedWord restrictedWord : dictionary) {
+			if (username.indexOf(restrictedWord.getWord().toLowerCase()) != -1) {
 				return true;
 			}
 		}

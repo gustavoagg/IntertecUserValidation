@@ -21,6 +21,12 @@ public interface UserService {
 
 	public boolean isUserExist(User user);
 	
+	
+	/**
+	 * @param user with assigned name
+	 * @return checks to see if user is valid and is not registered, if registered
+	 * it will generate a list of 14 different and valid user names
+	 */
 	public Result<Boolean,List<String>> checkUsername(User user);
 
 }
