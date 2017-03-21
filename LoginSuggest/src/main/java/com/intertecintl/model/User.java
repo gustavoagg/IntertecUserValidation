@@ -18,6 +18,10 @@ public class User {
 	
 	String username;
 	
+	public User(String uname) {
+		this.username = uname;
+	}
+
 	public long getId() {
 		return id;
 	}

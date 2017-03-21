@@ -12,8 +12,17 @@ import org.springframework.stereotype.Service;
 import com.intertecintl.model.User;
 import com.intertecintl.repository.UserRepository;
 import com.intertecintl.service.UserService;
+import com.intertecintl.Util.UserUtil;
 import com.intertecintl.model.Result;
 
+/**
+ * @author Gustavo
+ *
+ */
+/**
+ * @author Gustavo
+ *
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -51,20 +60,69 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<Boolean, List<String>> checkUsername(User user) {
 		Result<Boolean, List<String>> result = new Result<Boolean, List<String>>(isUserExist(user));
-		
-		if(!result.getKey()){
-			result.setValues(generateSuggestedNames(user));
+
+		if (!result.getKey()) {
+			if (hasRestrictedWord(user)) {
+				result.setValues(generateSuggestedNames(user, true));
+			} else {
+				result.setValues(generateSuggestedNames(user, false));
+			}
 		}
 		return result;
 	}
 
-	private List<String> generateSuggestedNames(User user) {
-		// TODO Create the real logic
-		return generateStubNames(user);
+	private boolean hasRestrictedWord(User user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * @param user
+	 *            user with the given name
+	 * @param regenerate
+	 *            true to specify if its necessary to change the complete name,
+	 *            false - to just add a random 3 char or number at the end.
+	 * @return Generates suggested names based on the name of the given user,
+	 * 
+	 */
+	private List<String> generateSuggestedNames(User user, boolean regenerate) {
+		String suggested = user.getUsername();
+		int badSuggestions = 0, counter = 0;
+
+		Collection<String> orderList = new TreeSet<String>(Collator.getInstance());
+
+		while (badSuggestions >= 3 || counter >= 14) {
+			if (regenerate) {
+				suggested = UserUtil.randomString(user.getUsername(), user.getUsername().length());
+			} else {
+				suggested = user.getUsername() + "." + UserUtil.randomString(user.getUsername(), 3);
+			}
+			if (isValidSuggestion(suggested)) {
+				orderList.add(suggested);
+				counter++;
+			} else {
+				badSuggestions++;
+			}
+		}
+		return new ArrayList<String>(orderList);
+	}
+
+	/**
+	 * @param suggested
+	 * @return Checks if suggested name already exists or has a restricted word
+	 */
+	private boolean isValidSuggestion(String suggested) {
+		User user = new User(suggested);
+		if (!isUserExist(user)) {
+			if (!hasRestrictedWord(user)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private List<String> generateStubNames(User user) {
-		List<String> suggested =  null;
+		List<String> suggested = null;
 		Collection<String> orderList = new TreeSet<String>(Collator.getInstance());
 		orderList.add("GustavoAT8");
 		orderList.add("GustavoGS3");
