@@ -72,13 +72,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<Boolean, List<String>> checkUsername(User user) {
 		Result<Boolean, List<String>> result;
-		if (isUserExist(user)) {
-			result = new Result<Boolean, List<String>>(false);
-			Iterable<RestrictedWord> dictionary = wordRepository.findAll();
-			result.setValues(generateSuggestedNames(user, dictionary));
+		// check if empty or size at least 3 chars
+		if ((user != null) && (user.getUsername()!=null)&&(!user.getUsername().isEmpty()) && (user.getUsername().length() > 3)) {
+			if (isUserExist(user)) {
+				result = new Result<Boolean, List<String>>(false);
+				Iterable<RestrictedWord> dictionary = wordRepository.findAll();
+				result.setValues(generateSuggestedNames(user, dictionary));
+			} else {
+				result = new Result<Boolean, List<String>>(true);
+			}
 		} else {
-			result = new Result<Boolean, List<String>>(true);
+			result = new Result<Boolean, List<String>>(false);
 		}
+
 		return result;
 	}
 
@@ -99,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
 		Collection<String> orderList = new TreeSet<String>(Collator.getInstance());
 
-		while ((counter != 14)||(badSuggestions==3)) {
+		while ((counter != 14) || (badSuggestions == 3)) {
 			if (regenerate) {
 				// Added the counter to the sourceString to obtain alternatives
 				// in the case of a username with the same letter ejm: "iiiiii"
@@ -129,7 +135,7 @@ public class UserServiceImpl implements UserService {
 	 * @param dictionary
 	 * @return Checks if suggested name already exists or has a restricted word
 	 */
-	private boolean isValidSuggestion(String suggested, Iterable<RestrictedWord> dictionary) {
+	public boolean isValidSuggestion(String suggested, Iterable<RestrictedWord> dictionary) {
 		User user = new User();
 		user.setUsername(suggested);
 		if (!hasRestrictedWord(user, dictionary)) {
@@ -154,27 +160,6 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		return false;
-	}
-
-	private List<String> generateStubNames(User user) {
-		List<String> suggested = null;
-		Collection<String> orderList = new TreeSet<String>(Collator.getInstance());
-		orderList.add("GustavoAT8");
-		orderList.add("GustavoGS3");
-		orderList.add("GustavoTO2");
-		orderList.add("GustavoSA1");
-		orderList.add("GustavoAS1");
-		orderList.add("GustavoGT9");
-		orderList.add("GustavoUS3");
-		orderList.add("GustavoVA2");
-		orderList.add("Gustavo2ST");
-		orderList.add("GustavoA4G");
-		orderList.add("Gustavo4AV");
-		orderList.add("GustavoST1");
-		orderList.add("GustavoOU4");
-		orderList.add("GustavoTAS");
-		suggested = new ArrayList<>(orderList);
-		return suggested;
 	}
 
 }
