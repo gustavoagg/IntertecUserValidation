@@ -52,6 +52,25 @@ public class RestrictedWordController {
 		}
 		return new ResponseEntity<RestrictedWord>(word, HttpStatus.OK);
 	}
+	
+	/**
+	 * Request a RestrictedWord by its Id
+	 * 
+	 * @param id
+	 * @return ResponseEntity<RestrictedWord> associated to the given id
+	 */
+	@RequestMapping(value = "/restricted/add/{word}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<RestrictedWord> addRestrictedWord(@PathVariable("word") String word,
+			UriComponentsBuilder ucBuilder) {
+		RestrictedWord restrictedWord = new RestrictedWord();
+		restrictedWord.setWord(word);
+		restrictedWordService.saveRestrictedWord(restrictedWord);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/restricted/{id}").buildAndExpand(restrictedWord.getId()).toUri());
+
+		return new ResponseEntity<RestrictedWord>(restrictedWord, HttpStatus.CREATED);
+	}
 
 	/**
 	 * Create a new restricted word into the repository with the given word
