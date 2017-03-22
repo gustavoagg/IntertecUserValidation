@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.intertecintl.model.RestrictedWord;
 import com.intertecintl.model.Result;
 import com.intertecintl.model.User;
-import com.intertecintl.repository.RestrictedWordRepository;
+import com.intertecintl.service.RestrictedWordService;
 import com.intertecintl.service.UserService;
 
 @RunWith(SpringRunner.class)
@@ -25,8 +26,7 @@ public class LoginSuggestApplicationTests {
 	UserService userService;
 
 	@Autowired
-	RestrictedWordRepository restrictedRepository;
-
+	RestrictedWordService restrictedService;
 
 	/**
 	 * Ideal case with no conflict
@@ -94,6 +94,31 @@ public class LoginSuggestApplicationTests {
 	}
 
 	/**
+	 * case with restricted Words
+	 */
+	@Test
+	public void checkingWithRestrictedWords() {
+		//Adding restricted word
+		RestrictedWord word = new RestrictedWord();
+		word.setWord("drunk");
+		restrictedService.saveRestrictedWord(word);
+		
+		Result<Boolean, List<String>> result;
+		User user = new User();
+		user.setUsername("IwasDrunk");
+		
+		Iterable<RestrictedWord> dictionary = restrictedService.findAllRestrictedWord();
+		result = userService.checkUsername(user);
+		assertFalse(result.getKey());
+		assertTrue(result.getValues().size() == 14);
+
+		List<String> suggested = result.getValues();
+		for (int i = 0; i < suggested.size()-1; i++) {
+			assertTrue(userService.isValidSuggestion(suggested.get(i), dictionary));
+		}
+	}
+
+	/**
 	 * remove all the used data from database
 	 */
 	@After
@@ -110,9 +135,9 @@ public class LoginSuggestApplicationTests {
 			userService.deleteUserById(user.getId());
 
 		// Data from 3nd Test
-		user = null;
-		user = userService.findByName("iiiiiiiii");
-		if (user != null && user.getId() != 0)
-			userService.deleteUserById(user.getId());
+		RestrictedWord word = new RestrictedWord();
+		word = restrictedService.findByWord("drunk");
+		if (word != null && word.getId() != 0)
+			restrictedService.deleteRestrictedWordById(word.getId());
 	}
 }

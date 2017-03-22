@@ -3,6 +3,7 @@ package com.intertecintl.service;
 import java.util.List;
 
 import com.intertecintl.model.User;
+import com.intertecintl.model.RestrictedWord;
 import com.intertecintl.model.Result;
 
 public interface UserService {
@@ -13,14 +14,12 @@ public interface UserService {
 
 	void saveUser(User user);
 
-	void updateUser(User user);
-
 	void deleteUserById(long id);
 
 	List<User> findAllUsers();
 
 	public boolean isUserExist(User user);
-	
+		
 	
 	/**
 	 * @param user with assigned name
@@ -28,5 +27,7 @@ public interface UserService {
 	 * it will generate a list of 14 different and valid user names
 	 */
 	public Result<Boolean,List<String>> checkUsername(User user);
+
+	boolean isValidSuggestion(String string, Iterable<RestrictedWord> dictionary);
 
 }

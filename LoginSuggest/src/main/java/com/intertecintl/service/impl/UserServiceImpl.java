@@ -21,10 +21,7 @@ import com.intertecintl.model.Result;
  * @author Gustavo
  *
  */
-/**
- * @author Gustavo
- *
- */
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -50,10 +47,6 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 
-	public void updateUser(User user) {
-		userRepository.save(user);
-	}
-
 	public void deleteUserById(long id) {
 		userRepository.delete(id);
 	}
@@ -73,13 +66,15 @@ public class UserServiceImpl implements UserService {
 	public Result<Boolean, List<String>> checkUsername(User user) {
 		Result<Boolean, List<String>> result;
 		// check if empty or size at least 3 chars
-		if ((user != null) && (user.getUsername()!=null)&&(!user.getUsername().isEmpty()) && (user.getUsername().length() > 3)) {
-			if (isUserExist(user)) {
-				result = new Result<Boolean, List<String>>(false);
-				Iterable<RestrictedWord> dictionary = wordRepository.findAll();
-				result.setValues(generateSuggestedNames(user, dictionary));
-			} else {
+		String name = user.getUsername();
+		if ((user != null) && (name!=null)&&(!name.isEmpty()) && (name.length() > 3)) {
+			// obtains all Restricted Word List, to improve performance
+			Iterable<RestrictedWord> dictionary = wordRepository.findAll();
+			if ((!isUserExist(user))&&(!hasRestrictedWord(user, dictionary))) {	
 				result = new Result<Boolean, List<String>>(true);
+			} else {
+				result = new Result<Boolean, List<String>>(false);
+				result.setValues(generateSuggestedNames(user, dictionary));
 			}
 		} else {
 			result = new Result<Boolean, List<String>>(false);
