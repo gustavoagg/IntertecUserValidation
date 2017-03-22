@@ -1,5 +1,5 @@
 # User Validation App
- This application was made with services using Spring-Boot, AngularJS and Boostrap. 
+ This application was made with services using Spring-Boot, H2, AngularJS and Boostrap. 
  
  ## How it works
  It has a form to add users with just username and a list of added user to manage them.  You can add new user to the list, but if the username is already used it generates random suggestions. Using the given name it adds to it a "."(point) and 3 random chars from the given username, (Ex. "Jeannette.J3a"), it also has a list of restricted words that can not be contain by the usernames, in this case all the username is regenerated using the same letters in a random selection and aleatory numbers.
@@ -8,12 +8,12 @@
  Download or Clone the repository
  
  ## To Test 
- run on a console: `git clone https://github.com/gustavoagg/IntertecUserValidation.git` 
- then: `mvn clean spring-boot:run`
- this will start the server and you can access it on the navigator:
- http://localhost:8080/ 
+ 1. Run on a console: `git clone https://github.com/gustavoagg/IntertecUserValidation.git` 
+ 2. Enter in the folder LoginSuggest, using: `cd IntertecUserValidation\LoginSuggest`
+ 3. Then: `mvn clean spring-boot:run`
+ 4. Access on the navigator:  http://localhost:8080/ 
  
- To add restricted word you can use this url:
+ > Note: To add restricted word you can use this url:
   `http://localhost:8080/restricted/add/{word} ` just change {word} for the one you want, example to add the restricted word "drunk", use this link http://localhost:8080/restricted/add/drunk
   
   ## Use with Mysql (Optional)
