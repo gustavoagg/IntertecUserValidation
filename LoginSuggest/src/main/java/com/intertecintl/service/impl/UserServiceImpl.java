@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Result<Boolean, List<String>> checkUsername(User user) {
 		Result<Boolean, List<String>> result;
-		// check if empty or size at least 3 chars
+		// check if empty or size at least 6 chars
 		String name = user.getUsername();
-		if ((user != null) && (name!=null)&&(!name.isEmpty()) && (name.length() > 3)) {
+		if ((user != null) && (name!=null)&&(!name.isEmpty()) && (name.length() > 6)) {
 			// obtains all Restricted Word List, to improve performance
 			Iterable<RestrictedWord> dictionary = wordRepository.findAll();
 			if ((!isUserExist(user))&&(!hasRestrictedWord(user, dictionary))) {	

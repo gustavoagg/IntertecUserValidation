@@ -60,11 +60,11 @@ $(function () {
 							<div class="col-md-7">
 								<input type="text" ng-model="ctrl.user.username" name="uname"
 									class="username form-control input-sm"
-									placeholder="Enter your name" required ng-minlength="3" id="uname" />
+									placeholder="Enter your name" required ng-minlength="6" id="uname" />
 								<div class="has-error" ng-show="myForm.$dirty">
 									<span ng-show="myForm.uname.$error.required">This is a
 										required field</span> <span ng-show="myForm.uname.$error.minlength">Minimum
-										length required is 3</span> <span ng-show="myForm.uname.$invalid">This
+										length required is 6 letters</span> <span ng-show="myForm.uname.$invalid">This
 										field is invalid </span>
 								</div>
 								<div class="has-error" ng-show="ctrl.suggested">
