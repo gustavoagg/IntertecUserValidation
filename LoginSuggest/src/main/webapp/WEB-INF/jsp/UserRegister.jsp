@@ -29,6 +29,16 @@
 	background-color: yellow;
 }
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+$(function () {
+    $('#button').on('click', function () {
+        var text = $('#uname');
+        text.val(text.val() + ' after clicking');    
+    });
+});
+</script>
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link href="<c:url value='css/app.css' />" rel="stylesheet"></link>
@@ -37,7 +47,7 @@
 	<div class="generic-container" ng-controller="UserController as ctrl">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<span class="lead">User Registration Form
+				<span class="lead">Intertec - User Registration Form
 					${UserController.user.username}</span>
 			</div>
 			<div class="formcontainer">
@@ -50,7 +60,7 @@
 							<div class="col-md-7">
 								<input type="text" ng-model="ctrl.user.username" name="uname"
 									class="username form-control input-sm"
-									placeholder="Enter your name" required ng-minlength="3" />
+									placeholder="Enter your name" required ng-minlength="3" id="uname" />
 								<div class="has-error" ng-show="myForm.$dirty">
 									<span ng-show="myForm.uname.$error.required">This is a
 										required field</span> <span ng-show="myForm.uname.$error.minlength">Minimum
@@ -62,9 +72,7 @@
 										choose another, here there are some suggestions </p>
 								</div>
 								<div ng-repeat="u in ctrl.suggested">
-
-									<a href="#"><span ng-bind="u"></span></a>
-
+									<a href"#" ng-click="ctrl.suggest(u)"  ng-bind="u"></a>
 								</div>
 							</div>
 						</div>
@@ -112,7 +120,8 @@
 			</div>
 		</div>
 	</div>
-
+<script>
+</script>
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
 	<script src="<c:url value='js/app.js' />"></script>

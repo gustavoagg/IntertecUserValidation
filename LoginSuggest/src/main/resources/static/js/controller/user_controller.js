@@ -64,6 +64,12 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
               }
               self.deleteUser(id);
           };
+          
+          self.suggest = function(name){
+        	  self.reset();
+        	  console.log("nombre es"+name);
+              self.user.username = name;
+          };
 
           
           self.reset = function(){
