@@ -67,7 +67,7 @@ App.controller('UserController', ['$scope', 'UserService', function($scope, User
           
           self.suggest = function(name){
         	  self.reset();
-        	  console.log("nombre es"+name);
+        	  console.log("suggest attributes received");
               self.user.username = name;
           };
 
